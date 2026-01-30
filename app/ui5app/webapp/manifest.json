@@ -1,0 +1,39 @@
+{
+  "_version": "1.48.0",
+  "sap.app": {
+    "id": "ui5app",
+    "type": "application",
+    "title": "UI5 App CAP",
+    "applicationVersion": {
+      "version": "1.0.0"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "ui5app.view.Main",
+      "type": "XML",
+      "async": true,
+      "id": "mainView"
+    },
+
+    "resources": {
+    "js": []
+  }
+  }
+}

@@ -1,0 +1,232 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"  
+  controllerName="ui5app.controller.Main"
+  xmlns:uxap="sap.uxap" 
+  xmlns:core="sap.ui.core" 
+  xmlns:f="sap.f"  
+  xmlns:tnt="sap.tnt"
+  xmlns:table="sap.ui.table" 
+  xmlns:fb="sap.ui.comp.filterbar"  
+  xmlns:layout="sap.ui.layout" 
+  xmlns:viz="sap.viz.ui5.controls" 
+  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" 
+  xmlns:viz.data="sap.viz.ui5.data"
+  xmlns:form="sap.ui.layout.form"
+  >
+
+  <App>
+    <Page backgroundDesign="Solid" enableScrolling="true" title="CAP + UI5">
+
+      <customHeader>
+            <Toolbar class="toolbar_default">
+                <Button icon="sap-icon://nav-back" type="Transparent" class="sapUiMediumMarginBegin" press="onNavBack"></Button>
+				<Image src="images/SAP_Logo.png" press="goToHome"/>
+				<Label labelFor="myColumn" class="toolbar_title" text="Registro de Resultados" wrapping="true"/>
+				<Button visible="true" id="oBtnSelOrden" icon="sap-icon://search" type="Success" press="onGetOrden" text="Selector de Orden" />
+				<Button visible="false" id="oBtnBitacora" icon="sap-icon://developer-settings" type="Emphasized" press="onOpenNewBitacora" text="Bitácora Novedades" class="sapUiSmallMarginBegin sapUiTinyMarginEnd" />
+				
+                <ToolbarSpacer/>
+                <Label id="username" text="" class="toolbar_color"></Label>
+				<Button icon="sap-icon://decline" type="Transparent" press="logoff"  text="Cerrar sesión"  />
+            </Toolbar> 
+        </customHeader>
+
+      <content>
+        <f:DynamicPageHeader pinnable="true">
+				<f:content>
+					<fb:FilterBar reset="onReset" search="buscarCaracInspeccion" clear="onClear" showRestoreButton="true" showClearButton="true" class="sapUiSizeCompact">
+						<fb:filterItems>
+						
+							<fb:FilterItem name="PLN" label="Planta" width="100%" visible="true">
+								<fb:control>
+									<Input id="oPlant" class="sapUiTinyMarginEnd" width="130px" enabled="false" />
+								</fb:control>
+							</fb:FilterItem>
+							
+							<fb:FilterItem name="OF" label="Orden de Fabricación" visible="true">
+								<fb:control>					
+									<Input
+										id="inOrden" 
+										placeholder="Ingrese Orden de Fabricación"
+										showSuggestion="true"
+										suggestionItems="{ordenesModel>/Rowsets/Rowset/0/Row}"
+										liveChange="onOrdenChange"
+										suggestionItemSelected="onOrdenSelected">
+										<suggestionItems> 
+											<core:Item text="{ordenesModel>ID_ORDER}" />
+										</suggestionItems>
+									</Input>
+								</fb:control>
+							</fb:FilterItem>
+							
+							<fb:FilterItem name="MAT" label="Material"  visible="true">
+								<fb:control>
+									<Input 	id="inMaterial" 
+											placeholder="Material..."
+											editable="true"/>
+								</fb:control>		
+							</fb:FilterItem>
+
+							<fb:FilterItem name="MAT_DESC" label="Desc. Material"  visible="true">
+								<fb:control>
+									<Input 	id="dsMaterial" 
+											editable="false"/>
+								</fb:control>		
+							</fb:FilterItem>
+							
+							<fb:FilterItem name="LINEA" label="Línea" width="100%" visible="true">
+								<fb:control>
+									<Input id="oLinea" placeholder="Ingrese Línea" showSuggestion="true" 
+										suggestionItems="{cargaInputSugLineaModel>/Rowsets/Rowset/0/Row}">
+										<suggestionItems>
+											<core:Item text="{cargaInputSugLineaModel>DS_GRUPO_WC}" key="{cargaInputSugLineaModel>ID_GRUPO_WC}" />
+										</suggestionItems>
+									</Input>
+								</fb:control>
+							</fb:FilterItem>   
+							
+							<fb:FilterItem name="CAMP" label="Campaña" visible="true">
+								<fb:control>
+									<Input id="oCampana" placeholder="Ingrese Campaña" class="sapUiTinyMarginEnd" width="130px" enabled="true" liveChange="onCampanaChange"/>
+								</fb:control>
+							</fb:FilterItem> 
+							
+							<fb:FilterItem name="CREAT_DTE" label="Fecha desde/hasta">
+								<fb:control>
+							<!--	<DatePicker id="start_date" valueFormat="dd-MM-yyyy" displayFormat="dd-MM-yyyy" />			-->	
+									<Label text="Fecha desde/hasta" labelFor="DRS2"/>		
+									<DateRangeSelection id="oFecha" change="handleChange" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd"/>
+								</fb:control>
+							</fb:FilterItem>
+							
+							<fb:FilterItem name="OPERACION" label="Operación Inspección" >
+								<fb:control>
+									<Select id="oIdOperacionIns" change="onChangeCmbOperacion" selectedKey="-1" class="sapUiTinyMarginEnd" enabled="false" 
+										selectedItem="true" items="{path: 'operacionInsModel>/Rowsets/Rowset/0/Row', sorter: {path:'operacionInsModel>OPERACION_ID'}}">
+										<core:Item key="{operacionInsModel>OPERACION_ID}" text="{operacionInsModel>OPER_ID_DS}" />
+									</Select>
+								</fb:control>
+							</fb:FilterItem>
+							
+							<fb:FilterItem name="CARACT" label="Característica Inspección" visible="false">
+								<fb:control>
+									<Select id="oIdCaracIns" change="onChangeCmbCarac" selectedKey="-1" class="sapUiTinyMarginEnd" enabled="false" 
+										selectedItem="true" items="{path: 'caracteristicaInsModel>/Rowsets/Rowset/0/Row', sorter: {path:'caracteristicaInsModel>CHAR_INS'}}">
+										<core:Item key="{caracteristicaInsModel>CHAR_INS}" text="{caracteristicaInsModel>CHAR_INS_DESC}" />
+									</Select>
+								</fb:control>
+							</fb:FilterItem>
+							
+						</fb:filterItems>
+					</fb:FilterBar>
+				</f:content>
+			</f:DynamicPageHeader>
+		<ScrollContainer vertical="true">
+				<content>
+					<!--
+						<Bar>
+							<contentLeft>
+								<Button icon="sap-icon://save" id="oBtnNuevaRelacionMP" text="Buscar" type="Emphasized" class="sapUiTinyMarginEnd" enabled="true" 
+									press="onNuevaRelacionMP"/>				
+							</contentLeft> 
+						</Bar>
+						<VBox  width="50%" direction="Column" class=" sapUiSmallMargin"></VBox>
+					-->
+					<HBox width="99%" class="sapUiSmallMarginBegin sapUiTinyMarginBeginEnd">
+						<VBox  width="70%" direction="Column" >
+							<HBox width="99%" class="sapUiSmallMarginBegin">
+								<items>
+									<MessageStrip
+										id="oMessageStrip"
+										text=""
+										type="Information"
+										enableFormattedText="true"
+										showIcon="true"
+										visible="false"
+										showCloseButton="false"
+										class="sapUiTinyMarginTop sapUiSmallMarginEnd">
+									</MessageStrip>
+								</items>
+								<items>
+									<Button id="oBtnExport" tooltip="Exportar Novedades" visible="false" icon="sap-icon://excel-attachment" press="onDataExport" enabled="false" 
+										class="sapUiTinyMarginTop"/>
+								</items>
+							</HBox>	
+						</VBox>
+						
+					</HBox>
+					
+<!-- TABLA 1-->		<table:Table id="oIdTableRegistroResult" selectionMode = "Single" selectionBehavior="Row" width= "90%"  visibleRowCount="10" updateFinished="onLoad"
+						threshold = "10" editable = "false" enableBusyIndicator = "false" enableColumnReordering = "false" enableGrouping="false" enableSelectAll="false" 
+						showColumnVisibilityMenu = "true" showNoData = "true" enableCellFilter = "false" class="sapUiSmallMargin" alternateRowColors="true" visible="false"
+						rows = "{path : 'registroResultModel>/Rowsets/Rowset/0/Row', sorter: {path:'registroResultModel>CHAR_INS'} }" >
+						
+						<table:extension>
+							<Toolbar style="Clear"> 
+							 	<Title id="title" text="Características de Inspección"/>
+								<ToolbarSpacer/>	
+							 	<Text text="Hora Punto Inspección a SAP"/>
+								<TimePicker
+										id="oHoraNotifToSap"
+										value=""
+										valueFormat="yyy-MM-dd HH:mm"
+										displayFormat="HH:mm"
+										width="8%"
+										change=""
+										class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+								<Input value="" width="100px" textAlign="Initial" change=""  visible="false" />
+							</Toolbar>
+						<!--	</OverflowToolbar>  -->
+						</table:extension>
+						
+						<table:columns>
+							
+							<table:Column  hAlign="Left" sortProperty="LOTE_INS" visible="true"  filterProperty="LOTE_INS" width="15%">
+								<Text text="Lote Inspección" />
+								<table:template>
+									<Text  text="{registroResultModel>LOTE_INS}" />
+								</table:template>
+							</table:Column>
+							
+							<table:Column  hAlign="Left" sortProperty="ARTICULO" visible="true"  filterProperty="ARTICULO" width="25%">
+								<Text text="Artículo" />
+								<table:template>
+									<Text  text="{registroResultModel>ARTICULO}" />
+								</table:template>
+							</table:Column>
+							
+							<table:Column  hAlign="Left" sortProperty="CHAR_DESC" visible="true"  filterProperty="CHAR_DESC" width="32%">
+								<Text text="Característica Insp." />
+								<table:template>
+									<Text  text="{registroResultModel>CHAR_DESC}" />
+								</table:template>
+							</table:Column>
+							
+							<table:Column  hAlign="Center" sortProperty="CANT_MUESTRA" visible="false"  filterProperty="CANT_MUESTRA" >
+								<Text text="N° Muestras" />
+								<table:template>
+									<Text  text="{registroResultModel>CANT_MUESTRA}" />
+								</table:template>
+							</table:Column>
+							
+							<table:Column  hAlign="Center"  visible="true" width="28%">
+								<Text text="Registrar Resultado" />
+								<table:template>
+									<core:Icon  id="oIdIconModal" src="{registroResultModel>ICO_UPDATE}" color="{registroResultModel>ICO_COLOR}" size="1.4em" press="onOpenModalSetVar" enabled="true"/>
+								</table:template>
+							</table:Column>
+						
+						</table:columns>
+						
+
+					</table:Table>
+					
+				</content>
+			</ScrollContainer>
+
+      </content>
+    </Page>
+  </App>
+
+</mvc:View>

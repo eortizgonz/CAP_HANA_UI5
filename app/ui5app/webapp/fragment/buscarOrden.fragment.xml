@@ -1,0 +1,125 @@
+<!--Fragment Busca OF-->
+<core:FragmentDefinition id ="oFragment" xmlns="sap.m" xmlns:c="sap.ui.commons" xmlns:l="sap.ui.layout" xmlns:u="sap.ui.unified" xmlns:f="sap.ui.layout.form"
+        xmlns:table="sap.ui.table" xmlns:core="sap.ui.core" class="sapUiSizeCompact">
+		
+    <Dialog title = "Buscar Orden Fabricación" id = "oDialogBuscarOrden" contentHeight="80%" contentWidth="80%" afterClose="onCloseModalBuscarOrden">
+        <VBox width="99%" height="100%">
+
+			<HBox width="99%" >
+				<VBox width="100%" direction="Column" class="sapUiSmallMarginBegin sapUiSmallMarginBottom">
+					<items>
+						<VBox direction="Column" class=" sapUiSmallMarginEnd">
+							<HBox>
+								<VBox width="100%" direction="Column" class="sapUiTinyMargin">
+									<items>
+										<Label text="Línea:" design="Bold" />
+										<Select enabled="true" selectedKey="-1" id="oCmbLinea" change="onChangeLineas" selectedItem="true" width="300px"
+											items="{path: 'lineasModel>/Rowsets/Rowset/0/Row', sorter: {path:'lineasModel>ID_GRUPO_WC'}}">
+											<core:Item key="{lineasModel>ID_GRUPO_WC}" text="{lineasModel>ID_DS_GRUPO_WC}" />
+										</Select>
+									</items>
+								</VBox>
+								 
+								<VBox width="100%" direction="Column" class="sapUiTinyMargin">
+									<items>
+										<Label text="Fecha:" design="Bold" />
+										<DatePicker id="start_date" valueFormat="yyyy-MM-dd" displayFormat="dd-MM-yyyy" />									
+									</items>
+								</VBox>
+								
+								<VBox width="100%" direction="Column" class="sapUiTinyMargin">
+									<items>
+										<Label text="" design="Bold" />
+										<Button visible="true" id="oIdBtnBuscarOrden" press="onBuscarOrdenSeleccionada" text="Buscar" icon="sap-icon://developer-settings" type="Emphasized" class="sapUiSmallMarginEnd" />								
+									</items>
+								</VBox>
+							</HBox>
+						</VBox>
+						
+						
+					</items>
+				</VBox>
+			</HBox>
+			
+			<HBox width="99%" class=" sapUiSmallMargin">
+
+		        <items>
+                    <table:Table
+                        id = "oTablaOrdenes"
+                        selectionMode = "Single"
+                        visibleRowCount = "5"
+                        threshold = "5"
+                        editable = "false"
+                        enableBusyIndicator = "false"
+                        enableColumnReordering = "false"
+                        enableGrouping = "false"
+                        enableSelectAll = "false"
+                        showColumnVisibilityMenu = "false"
+                        showNoData = "true"
+                        enableCellFilter = "false"
+                        class = "sap.table.view"
+                        rows = "{path : 'orderStatusModel>/Rowsets/Rowset/0/Row' }">
+                        <table:columns>
+
+                            <table:Column visible="true" width="10%" >
+                                <Text text="Orden" />
+                                <table:template>
+                                    <Text  text="{orderStatusModel>ID_ORDER}" />
+                                </table:template>
+                            </table:Column>
+
+                            <table:Column visible="true" width="10%" >
+                                <Text text="ID Material" />
+                                <table:template>
+                                    <Text  text="{orderStatusModel>ID_MATER}" />
+                                </table:template>
+                            </table:Column>
+
+                            <table:Column visible="true" width="20%" >
+                                <Text text="Desc. Material" />
+                                <table:template>
+                                    <Text  text="{orderStatusModel>DS_MATER}" />
+                                </table:template>
+                            </table:Column>
+
+                            <table:Column visible="true" width="10%" >
+                                <Text text="Campaña" />
+                                <table:template>
+                                    <Text  text="{orderStatusModel>ID_CAMPAIGN}" />
+                                </table:template>
+                            </table:Column>
+							
+                            <table:Column visible="true" width="10%" >
+                                <Text text="Inicio Orden" />
+                                <table:template>
+                                    <Text  text="{orderStatusModel>DT_START_PLANN}" />
+                                </table:template>
+                            </table:Column>
+
+                            <table:Column visible="true" width="10%" >
+                                <Text text="Fin Orden" />
+                                <table:template>
+                                    <Text  text="{orderStatusModel>DT_END_PLANN}" />
+                                </table:template>
+                            </table:Column>
+
+                            <table:Column hAlign="Center" width="10%" >
+                                <Text text="Acción" />
+								<table:template>
+                                    <core:Icon  src="sap-icon://accept" color="#1A9709" size="1.4em" press="onSetOrdenSeleccionada"/>
+                                </table:template>
+                            </table:Column>
+
+                        </table:columns>
+                    </table:Table>
+		        </items>
+			 </HBox>
+			 
+            <HBox justifyContent="Center" alignContent="Center" class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+                <Button text="Crear" visible="false" class="sapUiSmallMarginEnd" width="150px" id="btnSave" type="Accept" icon="sap-icon://save" press="" />
+                <Button text="Cerrar" class="sapUiSmallMarginEnd" width="150px" id="btnClose" type="Reject" press="onCloseModalBuscarOrden" />
+            </HBox>
+
+        </VBox>
+    </Dialog>
+</core:FragmentDefinition>
